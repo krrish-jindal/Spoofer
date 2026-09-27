@@ -1,7 +1,6 @@
 name: Build Location Spoofer APK
 
-on:
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 permissions:
   contents: read
@@ -9,18 +8,13 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract Android project
+      - name: Extract Android project ZIP
         run: |
           unzip -q LocationSpoofer_FLAT_ANDROID_V2.zip -d project
-
-          echo "Project files:"
-          find project -maxdepth 4 -type f | sort
-
           test -f project/build.gradle.kts
           test -f project/src/main/AndroidManifest.xml
 
@@ -34,8 +28,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK
-        run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -44,17 +37,10 @@ jobs:
 
       - name: Build APK
         working-directory: project
-        run: |
-          gradle assembleDebug --no-daemon
-
-      - name: Find generated APK
-        run: |
-          echo "Generated APK files:"
-          find project -type f -name "*.apk" -print
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LocationSpoofer-debug
-          path: project/**/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+          path: project/build/outputs/apk/debug/LocationSpoofer-debug.apk
