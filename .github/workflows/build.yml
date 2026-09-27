@@ -26,8 +26,10 @@ jobs:
           rm -rf project
           mkdir -p project
           unzip -q LocationSpoofer_FLAT_ANDROID.zip -d project
+
           echo "Extracted files:"
           find project -maxdepth 8 -type f | sort
+
           test -f project/build.gradle.kts
           test -f project/settings.gradle.kts
           test -f project/src/main/AndroidManifest.xml
@@ -40,6 +42,8 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
 
       - name: Install Android SDK
         run: |
